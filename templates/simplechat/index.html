@@ -2,5 +2,22 @@
 
 {% block content %}
 <p>Welcome!</p>
-<a>Create a new room!</a>
+<button id="create_new_room">Create a new room!</button>
+<a id="new_room_link"></a>
+{% endblock %}
+
+{% block bodyscripts %}
+    <script type="text/javascript">
+        function create_new_room() {
+            $.post("{% url 'simplechat:room_list' %}", function(data) {
+                $("#new_room_link").attr("href", data.url)
+                        .text("Click here to go to your newly created room!");
+            });
+        }
+
+        $(document).ready(function () {
+           $("#create_new_room").click(create_new_room);
+
+        });
+    </script>
 {% endblock %}
