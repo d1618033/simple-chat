@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <title>{% block title %}Simple Chat{% endblock %}</title>
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="{% static 'simplechat/js/jquery.cookie.js' %}"></script>
     <script src="{% static 'simplechat/js/main.js' %}"></script>
+    {% block headscripts %}
+    {% endblock %}
 </head>
 <body>
 <div id="content">

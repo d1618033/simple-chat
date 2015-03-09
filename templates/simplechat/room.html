@@ -1,5 +1,19 @@
 {% extends "simplechat/base.html" %}
 
-{% block content %}
-<h1>Welcome to room {{ room.id }}</h1>
+{% block headscripts %}
+    <script>
+        var name = prompt("Enter your nickname");
+        if (name === "" || name === "null") {
+            location.href = "{% url 'simplechat:index' %}";
+        }
+        $(document).ready(function () {
+            $.cookie("{{ room.id }}-name", name);
+            $("#greetings").text($("#greetings").text() + ", " + name);
+        });
+    </script>
 {% endblock %}
+
+{% block content %}
+<h1 id="greetings">Welcome to room {{ room.id }}</h1>
+{% endblock %}
+
