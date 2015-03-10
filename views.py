@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, DetailView
-from simplechat.models import Room
+from simplechat.models import Room, Participant
 from rest_framework.generics import ListCreateAPIView
-from simplechat.serializers import RoomSerializer
+from simplechat.serializers import RoomSerializer, ParticipantSerializer
 
 
 class Index(TemplateView):
@@ -18,3 +18,6 @@ class RoomView(DetailView):
     template_name = "simplechat/room.html"
 
 
+class ParticipantList(ListCreateAPIView):
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
