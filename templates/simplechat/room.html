@@ -18,4 +18,10 @@
 {% endblock %}
 {% block content %}
 <h1 id="greetings">Welcome to room {{ room.id }}</h1>
+<p>People in this room:</p>
+<ul>
+    {% for participant in room.participant_set.all %}
+        <li>{{ participant.name }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}
