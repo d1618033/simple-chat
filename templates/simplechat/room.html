@@ -2,16 +2,38 @@
 
 {% block headscripts %}
     <script>
-        var name = prompt("Enter your nickname");
-        if (name === "" || name === "null") {
-            location.href = "{% url 'simplechat:index' %}";
+        function get_name() {
+            return $.cookie("{{ room.id }}-name");
+        }
+        function set_name(name) {
+            $.cookie("{{ room.id }}-name", name);
+        }
+        var name = get_name();
+        if (name === "undefined") {
+            name = prompt("Enter your nickname");
+            if (name === "" || name === "null") {
+                location.href = "{% url 'simplechat:index' %}";
+            }
+            add_user(name);
+        }
+        function add_user(name) {
+            $.post(
+                    "{% url 'simplechat:participant_list' %}",
+                    {
+                        "room": {{room.id}},
+                        "name": name
+                    },
+                    function (){
+                        $("#people_list").append($("<li>").text(name));
+                    }
+            )
         }
     </script>
 {% endblock %}
 {% block bodyscripts %}
     <script>
         $(document).ready(function () {
-            $.cookie("{{ room.id }}-name", name);
+            set_name(name);
             $("#greetings").text($("#greetings").text() + ", " + name);
         });
     </script>
@@ -19,7 +41,7 @@
 {% block content %}
 <h1 id="greetings">Welcome to room {{ room.id }}</h1>
 <p>People in this room:</p>
-<ul>
+<ul id="people_list">
     {% for participant in room.participant_set.all %}
         <li>{{ participant.name }}</li>
     {% endfor %}
