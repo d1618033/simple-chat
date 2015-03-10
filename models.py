@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 
 
 class Room(models.Model):
-    pass
+    def __str__(self):
+        return "Room: {0}".format(self.pk)
 
 
 class Participant(models.Model):
