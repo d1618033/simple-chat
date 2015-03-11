@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView, DetailView
 from simplechat.models import Room, Participant
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from simplechat.serializers import RoomSerializer, ParticipantSerializer
 
 
@@ -19,5 +19,10 @@ class RoomView(DetailView):
 
 
 class ParticipantList(ListCreateAPIView):
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+
+
+class ParticipantDetail(RetrieveUpdateDestroyAPIView):
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer
