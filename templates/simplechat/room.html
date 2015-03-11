@@ -5,10 +5,23 @@
         function get_name() {
             return $.cookie("{{ room.id }}-name");
         }
+        function get_url() {
+            return $.cookie("{{ room.id }}-url");
+        }
         function set_name(name) {
             $.cookie("{{ room.id }}-name", name);
         }
+        function set_url(url) {
+            $.cookie("{{ room.id }}-url", url);
+        }
+        function delete_name(){
+            $.removeCookie("{{ room.id }}-name");
+        }
+        function delete_url(){
+            $.removeCookie("{{ room.id }}-url");
+        }
         var name = get_name();
+        var url = get_url();
         var is_new = name === "undefined";
         if (is_new) {
             name = prompt("Enter your nickname");
@@ -24,9 +37,25 @@
                     {
                         "room": {{room.id}},
                         "name": name
+                    },
+                    function (data) {
+                        set_url(data.url);
                     }
             )
         }
+        function delete_user() {
+            $.ajax({
+                url: get_url(),
+                method: "delete",
+                success: function () {
+                    delete_name();
+                    delete_url();
+                }
+            });
+        }
+{#        $( window ).unload(function() {#}
+{#            delete_user();#}
+{#        });#}
     </script>
 {% endblock %}
 {% block bodyscripts %}
@@ -34,7 +63,7 @@
         $(document).ready(function () {
             $("#greetings").text($("#greetings").text() + ", " + name);
             if (is_new) {
-                $("#people_list").append($("<li>").text(name));
+                $("#people_list").append($("<li id='"+get_url()+"'>").text(name));
             }
         });
     </script>
