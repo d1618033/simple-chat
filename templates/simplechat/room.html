@@ -9,12 +9,14 @@
             $.cookie("{{ room.id }}-name", name);
         }
         var name = get_name();
-        if (name === "undefined") {
+        var is_new = name === "undefined";
+        if (is_new) {
             name = prompt("Enter your nickname");
             if (name === "" || name === "null") {
                 location.href = "{% url 'simplechat:index' %}";
             }
             add_user(name);
+            set_name(name);
         }
         function add_user(name) {
             $.post(
@@ -22,9 +24,6 @@
                     {
                         "room": {{room.id}},
                         "name": name
-                    },
-                    function (){
-                        $("#people_list").append($("<li>").text(name));
                     }
             )
         }
@@ -33,8 +32,10 @@
 {% block bodyscripts %}
     <script>
         $(document).ready(function () {
-            set_name(name);
             $("#greetings").text($("#greetings").text() + ", " + name);
+            if (is_new) {
+                $("#people_list").append($("<li>").text(name));
+            }
         });
     </script>
 {% endblock %}
