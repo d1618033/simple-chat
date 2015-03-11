@@ -11,6 +11,8 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="simplechat:participant_detail")
+
     class Meta:
         model = Participant
-        fields = ('room', 'name')
+        fields = ('url', 'room', 'name')
