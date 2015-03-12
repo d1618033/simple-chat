@@ -2,35 +2,12 @@
 
 {% block headscripts %}
     <script>
-        function get_name() {
-            return $.cookie("{{ room.id }}-name");
+        var name = prompt("Enter your nickname");
+        var url;
+        if (name === "" || name === "null") {
+            location.href = "{% url 'simplechat:index' %}";
         }
-        function get_url() {
-            return $.cookie("{{ room.id }}-url");
-        }
-        function set_name(name) {
-            $.cookie("{{ room.id }}-name", name);
-        }
-        function set_url(url) {
-            $.cookie("{{ room.id }}-url", url);
-        }
-        function delete_name(){
-            $.removeCookie("{{ room.id }}-name");
-        }
-        function delete_url(){
-            $.removeCookie("{{ room.id }}-url");
-        }
-        var name = get_name();
-        var url = get_url();
-        var is_new = name === "undefined";
-        if (is_new) {
-            name = prompt("Enter your nickname");
-            if (name === "" || name === "null") {
-                location.href = "{% url 'simplechat:index' %}";
-            }
-            add_user(name);
-            set_name(name);
-        }
+        add_user(name);
         function add_user(name) {
             $.post(
                     "{% url 'simplechat:participant_list' %}",
@@ -39,17 +16,15 @@
                         "name": name
                     },
                     function (data) {
-                        set_url(data.url);
+                        url = data.url;
                     }
             )
         }
         function delete_user() {
             $.ajax({
-                url: get_url(),
+                url: url,
                 method: "delete",
                 success: function () {
-                    delete_name();
-                    delete_url();
                     location.href = "{% url 'simplechat:index' %}";
                 }
             });
@@ -61,9 +36,7 @@
         $(document).ready(function () {
             $("#logout").click(delete_user);
             $("#greetings").text($("#greetings").text() + ", " + name);
-            if (is_new) {
-                $("#people_list").append($("<li id='"+get_url()+"'>").text(name));
-            }
+            $("#people_list").append($("<li id='"+url+"'>").text(name));
         });
     </script>
 {% endblock %}
