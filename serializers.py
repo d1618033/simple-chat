@@ -4,10 +4,11 @@ from simplechat.models import Room, Participant
 
 class RoomSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="simplechat:room_detail")
+    participant_set = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Room
-        fields = ('url',)
+        fields = ('url', 'participant_set')
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
