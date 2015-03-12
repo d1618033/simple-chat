@@ -10,7 +10,7 @@
         add_user(name);
         function add_user(name) {
             $.post(
-                    "{% url 'simplechat:participant_list' %}",
+                    "{% url 'simplechat_api:participant_list' %}",
                     {
                         "room": {{room.id}},
                         "name": name
