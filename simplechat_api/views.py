@@ -8,6 +8,11 @@ class RoomList(ListCreateAPIView):
     serializer_class = RoomSerializer
 
 
+class RoomDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+
+
 class ParticipantList(ListCreateAPIView):
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer
