@@ -50,17 +50,16 @@
                 success: function () {
                     delete_name();
                     delete_url();
+                    location.href = "{% url 'simplechat:index' %}";
                 }
             });
         }
-{#        $( window ).unload(function() {#}
-{#            delete_user();#}
-{#        });#}
     </script>
 {% endblock %}
 {% block bodyscripts %}
     <script>
         $(document).ready(function () {
+            $("#logout").click(delete_user);
             $("#greetings").text($("#greetings").text() + ", " + name);
             if (is_new) {
                 $("#people_list").append($("<li id='"+get_url()+"'>").text(name));
@@ -76,4 +75,5 @@
         <li>{{ participant.name }}</li>
     {% endfor %}
 </ul>
+<p>Had enough? <a id="logout">Leave room.</a></p>
 {% endblock %}
