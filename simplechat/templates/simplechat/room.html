@@ -106,8 +106,22 @@
             message = fix_message(message);
             $("#message_list").append($("<li>").text(message));
         }
+        function get_message_text() {
+            return $("#message")[0].value
+        }
+        function clear_message_text() {
+            $("#message")[0].value = "";
+        }
         function on_click_send_message() {
-            add_message_to_list($("#message")[0].value);
+            var message = get_message_text();
+            add_message_to_list(message);
+            clear_message_text();
+        }
+        function on_keypress_message(e) {
+            if (e.which == 13) {
+                on_click_send_message();
+                return false;
+            }
         }
         function poll(){
             update_users();
@@ -123,8 +137,9 @@
             $("#message-send-btn").click(on_click_send_message);
             $("#message-label").text(fix_message(""));
             $("#greetings").text($("#greetings").text() + ", " + user.name);
-
+            $('#message').keypress(on_keypress_message);
             add_user_to_list(user.name);
+            $('#message').focus();
             poll();
         });
     </script>
