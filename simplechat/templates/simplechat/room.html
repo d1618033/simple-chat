@@ -11,8 +11,8 @@
             location.href = "{% url 'simplechat:index' %}";
         }
         var user = new User(name);
-        add_user(name);
-        function add_user(name) {
+        add_user();
+        function add_user() {
             $.post(
                     "{% url 'simplechat_api:participant_list' %}",
                     {
