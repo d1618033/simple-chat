@@ -1,23 +1,14 @@
+from rest_framework import viewsets
+
 from simplechat.models import Room, Participant
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from simplechat_api.serializers import RoomSerializer, ParticipantSerializer
 
 
-class RoomList(ListCreateAPIView):
+class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
 
-class RoomDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomSerializer
-
-
-class ParticipantList(ListCreateAPIView):
-    queryset = Participant.objects.all()
-    serializer_class = ParticipantSerializer
-
-
-class ParticipantDetail(RetrieveUpdateDestroyAPIView):
+class ParticipantViewSet(viewsets.ModelViewSet):
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer

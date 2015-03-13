@@ -3,7 +3,7 @@ from simplechat.models import Room, Participant
 
 
 class RoomSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="simplechat_api:room_detail")
+    url = serializers.HyperlinkedIdentityField(view_name="simplechat_api:room-detail")
     view_url = serializers.HyperlinkedIdentityField(view_name="simplechat:room_detail")
     participant_set = serializers.StringRelatedField(many=True)
 
@@ -13,7 +13,7 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="simplechat_api:participant_detail")
+    url = serializers.HyperlinkedIdentityField(view_name="simplechat_api:participant-detail")
 
     class Meta:
         model = Participant

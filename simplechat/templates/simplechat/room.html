@@ -14,7 +14,7 @@
         add_user();
         function add_user() {
             $.post(
-                    "{% url 'simplechat_api:participant_list' %}",
+                    "{% url 'simplechat_api:participant-list' %}",
                     {
                         "room": {{room.id}},
                         "name": user.name
@@ -35,7 +35,7 @@
         }
         function update_users() {
             $.get(
-                    "{% url 'simplechat_api:room_detail' room.id%}",
+                    "{% url 'simplechat_api:room-detail' room.id%}",
                     {},
                     function (data) {
                         update_users_list(data.participant_set);

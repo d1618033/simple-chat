@@ -9,7 +9,7 @@
 {% block bodyscripts %}
     <script type="text/javascript">
         function create_new_room() {
-            $.post("{% url 'simplechat_api:room_list' %}", function(data) {
+            $.post("{% url 'simplechat_api:room-list' %}", function(data) {
                 $("#new_room_link").attr("href", data.view_url)
                         .text("Click here to go to your newly created room!");
             });
