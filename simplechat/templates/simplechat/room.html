@@ -121,6 +121,7 @@
         $(document).ready(function () {
             $("#logout").click(delete_user);
             $("#message-send-btn").click(on_click_send_message);
+            $("#message-label").text(fix_message(""));
             $("#greetings").text($("#greetings").text() + ", " + user.name);
 
             add_user_to_list(user.name);
@@ -137,8 +138,8 @@
 <ul id="message_list">
 </ul>
 <div id="message_form">
-    <label for="message">Message:</label>
-    <textarea id="message"></textarea>
+    <label id="message-label" for="message"></label>
+    <input type="text" id="message">
     <input id="message-send-btn" type="button" value="Send">
 </div>
 <p>Had enough? <a id="logout">Leave room.</a></p>
