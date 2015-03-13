@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from simplechat.models import Room, Participant
+from simplechat.models import Room, Participant, Message
 
 
 class RoomSerializer(serializers.ModelSerializer):
@@ -18,3 +18,11 @@ class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participant
         fields = ('url', 'room', 'name')
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="simplechat_api:message-detail")
+
+    class Meta:
+        model = Message
+        fields = ('url', 'room', 'participant', 'message')
