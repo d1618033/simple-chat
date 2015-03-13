@@ -105,6 +105,8 @@
         function add_message_to_list(message) {
             message = fix_message(message);
             $("#message_list").append($("<li>").text(message));
+            var e = $("#message_list_div");
+            e.scrollTop(e.scrollHeight);
         }
         function get_message_text() {
             return $("#message")[0].value
@@ -143,19 +145,40 @@
             poll();
         });
     </script>
+    <style>
+       #message {
+            width: 1000px;
+        }
+        .scroll {
+            overflow-x: scroll;
+            overflow-y: scroll;
+        }
+        #message_list_div {
+            height: 150px;
+            width: 1000px;
+        }
+        #people_list_div{
+            height: 100px;
+            width: 300px;
+        }
+    </style>
 {% endblock %}
 {% block content %}
-<h1 id="greetings">Welcome to room {{ room.id }}</h1>
-<p>People in this room:</p>
-<ul id="people_list">
-</ul>
-<p>Messages:</p>
-<ul id="message_list">
-</ul>
-<div id="message_form">
-    <label id="message-label" for="message"></label>
-    <input type="text" id="message">
-    <input id="message-send-btn" type="button" value="Send">
-</div>
-<p>Had enough? <a id="logout">Leave room.</a></p>
+    <h1 id="greetings">Welcome to room {{ room.id }}</h1>
+    <p>People in this room:</p>
+    <div id="people_list_div" class="scroll">
+        <ul id="people_list">
+        </ul>
+    </div>
+    <p>Messages:</p>
+    <div id="message_list_div" class="scroll">
+        <ul id="message_list">
+        </ul>
+    </div>
+    <div id="message_form">
+        <label id="message-label" for="message"></label>
+        <input type="text" id="message">
+        <input id="message-send-btn" type="button" value="Send">
+    </div>
+    <p>Had enough? <a id="logout">Leave room.</a></p>
 {% endblock %}
