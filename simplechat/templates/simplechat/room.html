@@ -42,7 +42,37 @@
                     }
             )
         }
-
+        function get_counter(x) {
+            var counter = {};
+            x.forEach(function (X) {
+               if (counter[X] === undefined) {
+                   counter[X] = 1;
+               } else {
+                   counter[X] += 1;
+               }
+            });
+            return counter;
+        }
+        function get_all_keys(obj1, obj2) {
+            return _.chain(_.keys(obj1))
+                .union(_.keys(obj2))
+                .value();
+        }
+        function get_diff_counters(old_counter, new_counter) {
+            var to_add = {};
+            var to_delete = {};
+            _.each(get_all_keys(old_counter, new_counter), function (key) {
+                var old_value = old_counter[key] | 0;
+                var new_value = new_counter[key] | 0;
+                var diff = new_value - old_value;
+                if (diff > 0) {
+                    to_add[key] = diff;
+                } else {
+                    to_delete[key] = -diff;
+                }
+            });
+            return {"add": to_add, "delete": to_delete};
+        }
     </script>
 {% endblock %}
 {% block bodyscripts %}
