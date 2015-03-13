@@ -33,6 +33,16 @@
                 }
             });
         }
+        function get_users() {
+            $.get(
+                    "{% url 'simplechat_api:room_detail' room.id%}",
+                    {},
+                    function (data) {
+                        console.log(data.participant_set);
+                    }
+            )
+        }
+
     </script>
 {% endblock %}
 {% block bodyscripts %}
