@@ -2,27 +2,31 @@
 
 {% block headscripts %}
     <script>
+        var User = function (name, url) {
+            this.name = name;
+            this.url = url;
+        }
         var name = prompt("Enter your nickname");
-        var url;
         if (name === "" || name === "null") {
             location.href = "{% url 'simplechat:index' %}";
         }
+        var user = new User(name);
         add_user(name);
         function add_user(name) {
             $.post(
                     "{% url 'simplechat_api:participant_list' %}",
                     {
                         "room": {{room.id}},
-                        "name": name
+                        "name": user.name
                     },
                     function (data) {
-                        url = data.url;
+                        user.url = data.url;
                     }
             )
         }
         function delete_user() {
             $.ajax({
-                url: url,
+                url: user.url,
                 method: "delete",
                 success: function () {
                     location.href = "{% url 'simplechat:index' %}";
@@ -35,8 +39,8 @@
     <script>
         $(document).ready(function () {
             $("#logout").click(delete_user);
-            $("#greetings").text($("#greetings").text() + ", " + name);
-            $("#people_list").append($("<li id='"+url+"'>").text(name));
+            $("#greetings").text($("#greetings").text() + ", " + user.name);
+            $("#people_list").append($("<li id='"+(user.url)+"'>").text(user.name));
         });
     </script>
 {% endblock %}
