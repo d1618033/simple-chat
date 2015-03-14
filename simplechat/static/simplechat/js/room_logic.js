@@ -1,15 +1,20 @@
+var last_message_pk = 0;
+var user;
+
 var User = function (name, url, pk) {
     this.name = name;
     this.url = url;
     this.pk = pk;
 };
-var last_message_pk = 0;
-var name = prompt("Enter your nickname");
-if (name === "" || name === "null") {
-    location.href = urls.index;
+
+function ask_user_for_name() {
+    var name = prompt("Enter your nickname");
+    if (name === "" || name === "null") {
+        location.href = urls.index;
+    }
+    return name;
 }
-var user = new User(name);
-add_user();
+
 function add_user() {
     $.post(
             urls.participant_list,
@@ -175,6 +180,8 @@ function pollForMessages() {
 }
 
 $(document).ready(function () {
+    user = new User(ask_user_for_name());
+    add_user();
     $("#logout").click(delete_user);
     $("#message-send-btn").click(on_click_send_message);
     $("#message-label").text(fix_message(""));
