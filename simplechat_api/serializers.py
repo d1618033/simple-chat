@@ -22,7 +22,8 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="simplechat_api:message-detail")
+    name = serializers.ReadOnlyField(source='participant.name')
 
     class Meta:
         model = Message
-        fields = ('url', 'pk', 'room', 'participant', 'message')
+        fields = ('url', 'pk', 'room', 'participant', 'name', 'message')
