@@ -2,6 +2,13 @@
 
 {% block headscripts %}
     <script>
+        var urls = {
+            index: "{% url 'simplechat:index' %}",
+            participant_list: "{% url 'simplechat_api:participant-list' %}",
+            room_detail: "{% url 'simplechat_api:room-detail' room.id%}",
+            message_list: "{% url 'simplechat_api:message-list' %}",
+            message_recent: "{% url 'simplechat_api:message-recent' %}"
+        }
         var User = function (name, url, pk) {
             this.name = name;
             this.url = url;
@@ -10,13 +17,13 @@
         var last_message_pk = 0;
         var name = prompt("Enter your nickname");
         if (name === "" || name === "null") {
-            location.href = "{% url 'simplechat:index' %}";
+            location.href = urls.index;
         }
         var user = new User(name);
         add_user();
         function add_user() {
             $.post(
-                    "{% url 'simplechat_api:participant-list' %}",
+                    urls.participant_list,
                     {
                         "room": {{room.id}},
                         "name": user.name
@@ -37,14 +44,14 @@
             });
         }
         function go_to_home_page() {
-            location.href = "{% url 'simplechat:index' %}";
+            location.href = urls.index;
         }
         function on_room_deletion() {
             go_to_home_page();
         }
         function update_users() {
             $.get(
-                    "{% url 'simplechat_api:room-detail' room.id%}",
+                    urls.room_detail,
                     {},
                     function (data) {
                         update_users_list(data.participant_set);
@@ -141,7 +148,7 @@
             }
         }
         function post_message_to_server(message) {
-            $.post("{% url 'simplechat_api:message-list' %}",
+            $.post(urls.message_list,
                     {
                         "room": {{ room.id }},
                         "participant": user.pk,
@@ -150,7 +157,7 @@
             )
         }
         function update_messages() {
-            $.get("{% url 'simplechat_api:message-recent' %}",
+            $.get(urls.message_recent,
                     {
                         'room_pk': {{ room.id }},
                         'from_pk': last_message_pk,
