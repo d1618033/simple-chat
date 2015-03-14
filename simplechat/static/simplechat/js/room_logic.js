@@ -85,10 +85,10 @@ function get_diff_counters(old_counter, new_counter) {
     return {"add": to_add, "delete": to_delete};
 }
 function add_user_to_list(name) {
-    $("#people_list").append($("<li>").text(name).attr("name", name));
+    $("#people_list").append($("<li>").text(name).attr("data-name", name));
 }
 function remove_user_from_list(name, number) {
-    $("#people_list li[name='"+name+"']:lt("+number+")").remove();
+    $("#people_list li[data-name='"+name+"']:lt("+number+")").remove();
 }
 function get_old_users() {
     return $("#people_list").find("li").map(function(i,e){return e.textContent}).toArray();
