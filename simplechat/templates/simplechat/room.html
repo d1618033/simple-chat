@@ -2,10 +2,12 @@
 
 {% block headscripts %}
     <script>
-        var User = function (name, url) {
+        var User = function (name, url, pk) {
             this.name = name;
             this.url = url;
+            this.pk = pk;
         }
+        var last_message_pk = 0;
         var name = prompt("Enter your nickname");
         if (name === "" || name === "null") {
             location.href = "{% url 'simplechat:index' %}";
@@ -21,6 +23,7 @@
                     },
                     function (data) {
                         user.url = data.url;
+                        user.pk = data.pk;
                     }
             )
         }
@@ -116,6 +119,7 @@
         }
         function on_click_send_message() {
             var message = get_message_text();
+            post_message_to_server(message);
             add_message_to_list(message);
             clear_message_text();
         }
@@ -124,6 +128,15 @@
                 on_click_send_message();
                 return false;
             }
+        }
+        function post_message_to_server(message) {
+            $.post("{% url 'simplechat_api:message-list' %}",
+                    {
+                        'room': {{room.id}},
+                        'participant': user.pk,
+                        'message': message
+                    }
+            )
         }
         function poll(){
             update_users();
