@@ -31,10 +31,9 @@ function add_user() {
 function delete_user() {
     $.ajax({
         url: user.url,
-        method: "delete",
-        success: function () {
-            go_to_home_page();
-        }
+        method: "delete"
+    }).done(function () {
+        go_to_home_page();
     });
 }
 function go_to_home_page() {
