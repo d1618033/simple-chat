@@ -32,9 +32,15 @@
                 url: user.url,
                 method: "delete",
                 success: function () {
-                    location.href = "{% url 'simplechat:index' %}";
+                    go_to_home_page();
                 }
             });
+        }
+        function go_to_home_page() {
+            location.href = "{% url 'simplechat:index' %}";
+        }
+        function on_room_deletion() {
+            go_to_home_page();
         }
         function update_users() {
             $.get(
@@ -43,7 +49,9 @@
                     function (data) {
                         update_users_list(data.participant_set);
                     }
-            )
+            ).fail(function(){
+                on_room_deletion();
+            })
         }
         function get_counter(x) {
             var counter = {};
