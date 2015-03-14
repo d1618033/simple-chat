@@ -17,7 +17,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Participant
-        fields = ('url', 'room', 'name')
+        fields = ('url', 'pk', 'room', 'name')
 
 
 class MessageSerializer(serializers.ModelSerializer):
