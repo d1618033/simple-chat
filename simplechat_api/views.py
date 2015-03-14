@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
@@ -21,12 +22,15 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
 
     @list_route()
-    def recent_messages(self, request):
+    def recent(self, request):
         queryset = self.queryset
         from_pk = request.QUERY_PARAMS.get('from_pk', None)
         room_pk = request.QUERY_PARAMS.get('room_pk', None)
+        not_from_participant_pk = request.QUERY_PARAMS.get('not_from_participant_pk', None)
         if room_pk is not None:
             queryset = queryset.filter(room__pk=room_pk)
         if from_pk is not None:
-            queryset = queryset.filter(pk__gte=from_pk)
+            queryset = queryset.filter(pk__gt=from_pk)
+        if not_from_participant_pk is not None:
+            queryset = queryset.filter(~Q(participant__pk=not_from_participant_pk))
         return Response(self.serializer_class(queryset, many=True, context={'request': request}).data)
