@@ -1,21 +1,6 @@
 {% extends "simplechat/base.html" %}
 {% load staticfiles %}
-{% block headscripts %}
-    <script>
-        var urls = {
-            index: "{% url 'simplechat:index' %}",
-            participant_list: "{% url 'simplechat_api:participant-list' %}",
-            room_detail: "{% url 'simplechat_api:room-detail' room.id%}",
-            message_list: "{% url 'simplechat_api:message-list' %}",
-            message_recent: "{% url 'simplechat_api:message-recent' %}"
-        };
-        var context = {
-            room_id: {{ room.id }}
-        };
-    </script>
-    <script src="{% static 'simplechat/js/room_logic.js' %}"></script>
-{% endblock %}
-{% block bodyscripts %}
+{% block headstyles %}
     <style>
        #message {
             width: 1000px;
@@ -33,6 +18,21 @@
             width: 300px;
         }
     </style>
+{% endblock %}
+{% block headscripts %}
+    <script>
+        var urls = {
+            index: "{% url 'simplechat:index' %}",
+            participant_list: "{% url 'simplechat_api:participant-list' %}",
+            room_detail: "{% url 'simplechat_api:room-detail' room.id%}",
+            message_list: "{% url 'simplechat_api:message-list' %}",
+            message_recent: "{% url 'simplechat_api:message-recent' %}"
+        };
+        var context = {
+            room_id: {{ room.id }}
+        };
+    </script>
+    <script src="{% static 'simplechat/js/room_logic.js' %}"></script>
 {% endblock %}
 {% block content %}
     <h1 id="greetings"></h1>
