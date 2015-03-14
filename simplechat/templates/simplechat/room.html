@@ -155,7 +155,7 @@
             if (messages.length >= 1) {
                 _.each(messages, function (message) {
                     console.log(message);
-                    add_message_to_list(message.message, message.participant);
+                    add_message_to_list(message.message, message.name);
 
                 });
                 last_message_pk = messages[messages.length - 1].pk;
