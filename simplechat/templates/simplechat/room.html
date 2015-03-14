@@ -106,7 +106,7 @@
             message = fix_message(message);
             $("#message_list").append($("<li>").text(message));
             var e = $("#message_list_div");
-            e.scrollTop(e.scrollHeight);
+            e.scrollTop(e.prop("scrollHeight"));
         }
         function get_message_text() {
             return $("#message")[0].value
