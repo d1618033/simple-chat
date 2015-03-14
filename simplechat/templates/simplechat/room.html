@@ -102,11 +102,14 @@
             update_users_list_add(diff.add);
             update_users_list_delete(diff.delete);
         }
-        function fix_message(message) {
-            return "[" + user.name + "]: " + message;
+        function fix_message(message, name) {
+            if (name === undefined) {
+                name = user.name;
+            }
+            return "[" + name + "]: " + message;
         }
-        function add_message_to_list(message) {
-            message = fix_message(message);
+        function add_message_to_list(message, name) {
+            message = fix_message(message, name);
             $("#message_list").append($("<li>").text(message));
             var e = $("#message_list_div");
             e.scrollTop(e.prop("scrollHeight"));
@@ -132,17 +135,40 @@
         function post_message_to_server(message) {
             $.post("{% url 'simplechat_api:message-list' %}",
                     {
-                        'room': {{room.id}},
-                        'participant': user.pk,
-                        'message': message
+                        "room": {{ room.id }},
+                        "participant": user.pk,
+                        "message": message
                     }
             )
         }
-        function poll(){
-            update_users();
-            setTimeout(poll, 3000);
-        };
+        function update_messages() {
+            $.get("{% url 'simplechat_api:message-recent' %}",
+                    {
+                        'room_pk': {{ room.id }},
+                        'from_pk': last_message_pk,
+                        'not_from_participant_pk': user.pk
+                    },
+                    update_message_list
+            )
+        }
+        function update_message_list(messages) {
+            if (messages.length >= 1) {
+                _.each(messages, function (message) {
+                    console.log(message);
+                    add_message_to_list(message.message, message.participant);
 
+                });
+                last_message_pk = messages[messages.length - 1].pk;
+            }
+        }
+        function pollForUsers() {
+            update_users();
+            setTimeout(pollForUsers, 3000);
+        };
+        function pollForMessages() {
+            update_messages();
+            setTimeout(pollForMessages, 1000);
+        }
     </script>
 {% endblock %}
 {% block bodyscripts %}
@@ -155,7 +181,8 @@
             $('#message').keypress(on_keypress_message);
             add_user_to_list(user.name);
             $('#message').focus();
-            poll();
+            pollForUsers();
+            pollForMessages();
         });
     </script>
     <style>
