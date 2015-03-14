@@ -88,7 +88,9 @@ function add_user_to_list(name) {
     $("#people_list").append($("<li>").text(name).attr("data-name", name));
 }
 function remove_user_from_list(name, number) {
-    $("#people_list li[data-name='"+name+"']:lt("+number+")").remove();
+    $("#people_list").find("li").filter(function (i, e) {
+        return e.getAttribute("data-name") ===  name;
+    }).slice(0, number).remove();
 }
 function get_old_users() {
     return $("#people_list").find("li").map(function(i,e){return e.textContent}).toArray();
