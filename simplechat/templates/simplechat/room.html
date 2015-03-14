@@ -8,12 +8,15 @@
             room_detail: "{% url 'simplechat_api:room-detail' room.id%}",
             message_list: "{% url 'simplechat_api:message-list' %}",
             message_recent: "{% url 'simplechat_api:message-recent' %}"
-        }
+        };
+        var context = {
+            room_id: {{ room.id }}
+        };
         var User = function (name, url, pk) {
             this.name = name;
             this.url = url;
             this.pk = pk;
-        }
+        };
         var last_message_pk = 0;
         var name = prompt("Enter your nickname");
         if (name === "" || name === "null") {
@@ -25,7 +28,7 @@
             $.post(
                     urls.participant_list,
                     {
-                        "room": {{room.id}},
+                        "room": context.room_id,
                         "name": user.name
                     },
                     function (data) {
@@ -150,7 +153,7 @@
         function post_message_to_server(message) {
             $.post(urls.message_list,
                     {
-                        "room": {{ room.id }},
+                        "room": context.room_id,
                         "participant": user.pk,
                         "message": message
                     }
@@ -159,7 +162,7 @@
         function update_messages() {
             $.get(urls.message_recent,
                     {
-                        'room_pk': {{ room.id }},
+                        'room_pk': context.room_id,
                         'from_pk': last_message_pk,
                         'not_from_participant_pk': user.pk
                     },
@@ -179,7 +182,7 @@
         function pollForUsers() {
             update_users();
             setTimeout(pollForUsers, 3000);
-        };
+        }
         function pollForMessages() {
             update_messages();
             setTimeout(pollForMessages, 1000);
@@ -192,7 +195,7 @@
             $("#logout").click(delete_user);
             $("#message-send-btn").click(on_click_send_message);
             $("#message-label").text(fix_message(""));
-            $("#greetings").text($("#greetings").text() + ", " + user.name);
+            $("#greetings").text("Welcome too room " + context.room_id + ", " + user.name);
             $('#message').keypress(on_keypress_message);
             add_user_to_list(user.name);
             $('#message').focus();
@@ -219,7 +222,7 @@
     </style>
 {% endblock %}
 {% block content %}
-    <h1 id="greetings">Welcome to room {{ room.id }}</h1>
+    <h1 id="greetings"></h1>
     <p>People in this room:</p>
     <div id="people_list_div" class="scroll">
         <ul id="people_list">
