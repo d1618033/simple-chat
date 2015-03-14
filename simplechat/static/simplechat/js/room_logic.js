@@ -93,7 +93,9 @@ function remove_user_from_list(name, number) {
     }).slice(0, number).remove();
 }
 function get_old_users() {
-    return $("#people_list").find("li").map(function(i,e){return e.textContent}).toArray();
+    return $("#people_list").find("li").map(function(i, e) {
+        return e.textContent;
+    }).toArray();
 }
 function update_users_list_add(to_add) {
     _.each(to_add, function(count, name){
