@@ -91,7 +91,7 @@ function remove_user_from_list(name, number) {
     $("#people_list li[name='"+name+"']:lt("+number+")").remove();
 }
 function get_old_users() {
-    return $("#people_list li").map(function(i,e){return e.textContent}).toArray();
+    return $("#people_list").find("li").map(function(i,e){return e.textContent}).toArray();
 }
 function update_users_list_add(to_add) {
     _.each(to_add, function(count, name){
@@ -184,10 +184,11 @@ $(document).ready(function () {
     $("#logout").click(delete_user);
     $("#message-send-btn").click(on_click_send_message);
     $("#message-label").text(fix_message(""));
-    $("#greetings").text("Welcome too room " + context.room_id + ", " + user.name);
-    $('#message').keypress(on_keypress_message);
+    $("#greetings").text("Welcome to room " + context.room_id + ", " + user.name);
+    var message_elem = $('#message');
+    message_elem.keypress(on_keypress_message);
     add_user_to_list(user.name);
-    $('#message').focus();
+    message_elem.focus();
     pollForUsers();
     pollForMessages();
 });
