@@ -12,7 +12,7 @@ class OldRoomsManager(models.Manager):
         time = now() - ROOM_EXPIRATION
         queryset = []
         for room in super(OldRoomsManager, self).get_queryset():
-            if room.last_message_date() < time:
+            if (not room.has_participants()) or room.last_active() < time:
                 queryset.append(room)
         return queryset
 
@@ -25,12 +25,15 @@ class Room(models.Model):
     def __str__(self):
         return "Room: {0}".format(self.pk)
 
-    def last_message_date(self):
+    def last_active(self):
         result = self.message_set.aggregate(models.Max("created"))["created__max"]
         if result is None:
             return self.created
         else:
             return result
+
+    def has_participants(self):
+        return len(self.participant_set.all()) > 0
 
 
 class Participant(models.Model):
