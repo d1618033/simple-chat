@@ -9,7 +9,7 @@ var User = function (name, url, pk) {
 
 function ask_user_for_name() {
     var name = prompt("Enter your nickname");
-    if (name === "" || name === "null") {
+    if (name === "" || name === "null" || name === null) {
         location.href = urls.index;
     }
     return name;
