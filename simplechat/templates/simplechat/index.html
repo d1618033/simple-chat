@@ -1,23 +1,9 @@
 {% extends "simplechat/base.html" %}
 
 {% block content %}
-<p>Welcome!</p>
-<button id="create_new_room">Create a new room!</button>
-<a id="new_room_link"></a>
-{% endblock %}
-
-{% block bodyscripts %}
-    <script type="text/javascript">
-        function create_new_room() {
-            $.post("{% url 'simplechat_api:room-list' %}", function(data) {
-                $("#new_room_link").attr("href", data.view_url)
-                        .text("Click here to go to your newly created room!");
-            });
-        }
-
-        $(document).ready(function () {
-           $("#create_new_room").click(create_new_room);
-
-        });
-    </script>
+    <p>Welcome!</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Create a new room!">
+    </form>
 {% endblock %}
