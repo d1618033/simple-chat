@@ -34,8 +34,6 @@ class SeleniumTests(LiveServerTestCase):
 class TestChat(SeleniumTests):
     def test_create_new_room(self):
         self.get(reverse("simplechat:index"))
-        self.assertIn("Create a new room", self.get_text_body())
-        self.selenium.find_element_by_id("create_new_room").click()
-        self.selenium.implicitly_wait(3)
-        self.selenium.find_element_by_id("new_room_link").click()
-        self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, "room_detail")
+        self.assertIn("Welcome", self.get_text_body())
+        self.selenium.find_element_by_id("create_new_room_btn").click()
+        self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, "room_register")
