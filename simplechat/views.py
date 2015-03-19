@@ -4,6 +4,9 @@ from django.core.urlresolvers import reverse
 from simplechat.models import Room, Participant
 from simplechat.forms import NewRoomForm, RegisterForm
 
+import logging
+logger = logging.getLogger("custom")
+
 
 class Index(FormView):
     template_name = 'simplechat/index.html'
@@ -20,8 +23,9 @@ class RoomRegister(FormView):
 
     def form_valid(self, form):
         room_pk = self.kwargs['pk']
-        name = form.create(room_pk)
+        name, user_pk = form.create(room_pk)
         self.request.session['name'] = name
+        self.request.session['user_pk'] = user_pk
         return HttpResponseRedirect(reverse("simplechat:room_detail", args=(room_pk,)), )
 
 
@@ -33,6 +37,12 @@ class RoomView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(RoomView, self).get_context_data(**kwargs)
         if 'name' in self.request.session:
-            context['name'] = self.request.session['name']
-            del self.request.session['name']
+            for field in ['name', 'user_pk']:
+                context[field] = self.request.session[field]
+                del self.request.session[field]
         return context
+
+    def render_to_response(self, context, **response_kwargs):
+        if "name" not in context:
+            return HttpResponseRedirect(reverse("simplechat:room_register", args=(self.kwargs['pk'],)))
+        return super(RoomView, self).render_to_response(context, **response_kwargs)

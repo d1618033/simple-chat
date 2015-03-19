@@ -27,11 +27,13 @@
             room_detail: "{% url 'simplechat_api:room-detail' room.id %}",
             message_list: "{% url 'simplechat_api:message-list' %}",
             message_recent: "{% url 'simplechat_api:message-recent' %}",
-            register: "{% url 'simplechat:room_register' room.id %}"
+            register: "{% url 'simplechat:room_register' room.id %}",
+            participant: "{% url 'simplechat_api:participant-detail' user_pk %}"
         };
         var context = {
             room_id: {{ room.id }},
-            name: '{{ name }}'
+            name: '{{ name }}',
+            user_pk: {{ user_pk }}
         };
     </script>
     <script src="{% static 'simplechat/js/room_logic.js' %}"></script>
