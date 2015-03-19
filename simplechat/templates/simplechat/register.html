@@ -1,0 +1,11 @@
+{% extends "simplechat/base.html" %}
+
+{% block content %}
+    <p>Please enter your nickname</p>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Enter room">
+    </form>
+
+{% endblock %}

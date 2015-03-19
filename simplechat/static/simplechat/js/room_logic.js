@@ -183,8 +183,10 @@ function pollForMessages() {
 }
 
 $(document).ready(function () {
-    user = new User(ask_user_for_name());
-    add_user();
+    if (context.name === ""){
+        location.href = urls.register;
+    }
+    user = new User(context.name);
     $("#logout").click(delete_user);
     $("#message-send-btn").click(on_click_send_message);
     $("#message-label").text(fix_message(""));

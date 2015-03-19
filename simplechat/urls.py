@@ -4,4 +4,5 @@ from simplechat import views
 urlpatterns = patterns("",
     url(r"^$$", views.Index.as_view(), name="index"),
     url(r"^room/(?P<pk>\d+)/$", views.RoomView.as_view(), name="room_detail"),
+    url(r"^room/(?P<pk>\d+)/register/$", views.RoomRegister.as_view(), name="room_register"),
 )

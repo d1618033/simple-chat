@@ -24,12 +24,14 @@
         var urls = {
             index: "{% url 'simplechat:index' %}",
             participant_list: "{% url 'simplechat_api:participant-list' %}",
-            room_detail: "{% url 'simplechat_api:room-detail' room.id%}",
+            room_detail: "{% url 'simplechat_api:room-detail' room.id %}",
             message_list: "{% url 'simplechat_api:message-list' %}",
-            message_recent: "{% url 'simplechat_api:message-recent' %}"
+            message_recent: "{% url 'simplechat_api:message-recent' %}",
+            register: "{% url 'simplechat:room_register' room.id %}"
         };
         var context = {
-            room_id: {{ room.id }}
+            room_id: {{ room.id }},
+            name: '{{ name }}'
         };
     </script>
     <script src="{% static 'simplechat/js/room_logic.js' %}"></script>
