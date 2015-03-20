@@ -1,16 +1,12 @@
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse, resolve
 from selenium import webdriver
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
 
 class SeleniumTests(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
-        firefox_binary = FirefoxBinary('/usr/bin/firefox')
-        firefox_profile = FirefoxProfile("/home/david/.mozilla/firefox/btz4i8jg.Default User/")
-        cls.selenium = webdriver.Firefox(firefox_binary=firefox_binary, firefox_profile=firefox_profile)
+        cls.selenium = webdriver.Firefox()
         super(SeleniumTests, cls).setUpClass()
 
     @classmethod
@@ -128,4 +124,3 @@ class TestChat(ChatTestingUtils, SeleniumTests):
             "message": "again",
         })
         self.assert_messages_are(messages)
-
