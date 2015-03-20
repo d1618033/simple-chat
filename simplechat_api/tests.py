@@ -33,6 +33,7 @@ class SeleniumTests(LiveServerTestCase):
     def assert_at_url_name(self, name):
         self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, name)
 
+
 class TestChat(SeleniumTests):
     def open_create_new_page(self):
         self.get(reverse("simplechat:index"))
@@ -83,6 +84,9 @@ class TestChat(SeleniumTests):
         expected_message_list = [self.adjust_message(message) for message in expected_message_list]
         self.assertEqual(actual_message_list, expected_message_list)
 
+    def assert_no_messages(self):
+        self.assertEqual(len(self.get_messages()), 0)
+
     def test_create_new_room(self):
         self.open_create_new_page()
         self.assert_at_create_new_room()
@@ -108,10 +112,18 @@ class TestChat(SeleniumTests):
         self.create_new_room()
         self.enter_name("david")
         self.enter_room()
+        self.assert_no_messages()
         self.post_message("hello")
-        self.assert_messages_are([
-            {
-                "user": "david",
-                "message": "hello"
-            },
-        ])
+        messages = []
+        messages.append({
+            "user": "david",
+            "message": "hello",
+        })
+        self.assert_messages_are(messages)
+        self.post_message("again")
+        messages.append({
+            "user": "david",
+            "message": "again",
+        })
+        self.assert_messages_are(messages)
+
