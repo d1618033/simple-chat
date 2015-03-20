@@ -30,6 +30,8 @@ class SeleniumTests(LiveServerTestCase):
     def get_text_body(self):
         return self.selenium.find_element_by_tag_name("body").text
 
+    def assert_at_url_name(self, name):
+        self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, name)
 
 class TestChat(SeleniumTests):
     def open_create_new_page(self):
@@ -41,9 +43,19 @@ class TestChat(SeleniumTests):
     def create_new_room(self):
         self.selenium.find_element_by_id("create_new_room_btn").click()
 
+    def enter_name(self, name):
+        self.selenium.find_element_by_id("id_name").send_keys(name)
+
+    def enter_room(self):
+        self.selenium.find_element_by_id("enter_room_btn").click()
+
     def assert_at_register(self):
-        self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, "room_register")
+        self.assert_at_url_name("room_register")
         self.assertIn("Please enter your nickname", self.get_text_body())
+
+    def assert_at_room(self):
+        self.assert_at_url_name("room_detail")
+        self.assertRegex(self.get_text_body(), "Welcome to room \d+, \w+")
 
     def test_create_new_room(self):
         self.open_create_new_page()
@@ -51,3 +63,15 @@ class TestChat(SeleniumTests):
         self.create_new_room()
         self.assert_at_register()
 
+    def test_register_empty_name_doesnt_work(self):
+        self.open_create_new_page()
+        self.create_new_room()
+        self.enter_room()
+        self.assert_at_register()
+
+    def test_register_name_leads_to_room_page(self):
+        self.open_create_new_page()
+        self.create_new_room()
+        self.enter_name("david")
+        self.enter_room()
+        self.assert_at_room()
