@@ -32,8 +32,22 @@ class SeleniumTests(LiveServerTestCase):
 
 
 class TestChat(SeleniumTests):
-    def test_create_new_room(self):
+    def open_create_new_page(self):
         self.get(reverse("simplechat:index"))
+
+    def assert_at_create_new_room(self):
         self.assertIn("Welcome", self.get_text_body())
+
+    def create_new_room(self):
         self.selenium.find_element_by_id("create_new_room_btn").click()
+
+    def assert_at_register(self):
         self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, "room_register")
+        self.assertIn("Please enter your nickname", self.get_text_body())
+
+    def test_create_new_room(self):
+        self.open_create_new_page()
+        self.assert_at_create_new_room()
+        self.create_new_room()
+        self.assert_at_register()
+
