@@ -57,6 +57,32 @@ class TestChat(SeleniumTests):
         self.assert_at_url_name("room_detail")
         self.assertRegex(self.get_text_body(), "Welcome to room \d+, \w+")
 
+    def get_items_in_list(self, list_elem):
+        return [li.text for li in list_elem.find_elements_by_tag_name("li")]
+
+    def get_errors(self):
+        return self.get_items_in_list(self.selenium.find_element_by_class_name("errorlist"))
+
+    def assert_has_errors(self, errors):
+        self.assertEqual(self.get_errors(), errors)
+
+    def post_message(self, message):
+        elem = self.selenium.find_element_by_id("message")
+        elem.clear()
+        elem.send_keys(message)
+        self.selenium.find_element_by_id("message-send-btn").click()
+
+    def adjust_message(self, message_dict):
+        return "[{0}]: {1}".format(message_dict['user'], message_dict['message'])
+
+    def get_messages(self):
+        return self.get_items_in_list(self.selenium.find_element_by_id("message_list"))
+
+    def assert_messages_are(self, expected_message_list ):
+        actual_message_list = self.get_messages()
+        expected_message_list = [self.adjust_message(message) for message in expected_message_list]
+        self.assertEqual(actual_message_list, expected_message_list)
+
     def test_create_new_room(self):
         self.open_create_new_page()
         self.assert_at_create_new_room()
@@ -68,6 +94,7 @@ class TestChat(SeleniumTests):
         self.create_new_room()
         self.enter_room()
         self.assert_at_register()
+        self.assert_has_errors(["This field is required."])
 
     def test_register_name_leads_to_room_page(self):
         self.open_create_new_page()
@@ -75,3 +102,16 @@ class TestChat(SeleniumTests):
         self.enter_name("david")
         self.enter_room()
         self.assert_at_room()
+
+    def test_post_message_in_room(self):
+        self.open_create_new_page()
+        self.create_new_room()
+        self.enter_name("david")
+        self.enter_room()
+        self.post_message("hello")
+        self.assert_messages_are([
+            {
+                "user": "david",
+                "message": "hello"
+            },
+        ])
