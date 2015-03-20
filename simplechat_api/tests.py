@@ -50,7 +50,7 @@ class SeleniumTests(LiveServerTestCase):
 
 
 class ChatTestCase(SeleniumTests):
-    def open_create_new_page(self, window=None):
+    def open_create_new_room_page(self, window=None):
         self.get(reverse("simplechat:index"), window)
 
     def assert_at_create_new_room(self, window=None):
@@ -105,27 +105,27 @@ class ChatTestCase(SeleniumTests):
 
 class TestChat(ChatTestCase):
     def test_create_new_room(self):
-        self.open_create_new_page()
+        self.open_create_new_room_page()
         self.assert_at_create_new_room()
         self.create_new_room()
         self.assert_at_register()
 
     def test_register_empty_name_doesnt_work(self):
-        self.open_create_new_page()
+        self.open_create_new_room_page()
         self.create_new_room()
         self.enter_room()
         self.assert_at_register()
         self.assert_has_errors(["This field is required."])
 
     def test_register_name_leads_to_room_page(self):
-        self.open_create_new_page()
+        self.open_create_new_room_page()
         self.create_new_room()
         self.enter_name("david")
         self.enter_room()
         self.assert_at_room()
 
     def test_post_message_in_room(self):
-        self.open_create_new_page()
+        self.open_create_new_room_page()
         self.create_new_room()
         self.enter_name("david")
         self.enter_room()
@@ -145,7 +145,7 @@ class TestChat(ChatTestCase):
         self.assert_messages_are(messages)
 
     def test_post_messages_multiple_users(self):
-        self.open_create_new_page()
+        self.open_create_new_room_page()
         self.create_new_room()
         self.enter_name("david")
         self.enter_room()
