@@ -143,3 +143,30 @@ class TestChat(ChatTestCase):
             "message": "again",
         })
         self.assert_messages_are(messages)
+
+    def test_post_messages_multiple_users(self):
+        self.open_create_new_page()
+        self.create_new_room()
+        self.enter_name("david")
+        self.enter_room()
+        self.assert_no_messages()
+        self.post_message("hello")
+        second_window = self.new_window()
+        second_window.get(self.selenium.current_url)
+        self.assert_at_register(second_window)
+        self.enter_name("bro", second_window)
+        self.enter_room(second_window)
+        messages = []
+        messages.append({
+            "user": "david",
+            "message": "hello",
+        })
+        self.assert_messages_are(messages, second_window)
+        self.post_message("goodbye", second_window)
+        messages.append({
+            "user": "bro",
+            "message": "goodbye",
+        })
+        self.assert_messages_are(messages, second_window)
+        self.wait(3)
+        self.assert_messages_are(messages)
