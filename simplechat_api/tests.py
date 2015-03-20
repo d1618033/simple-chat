@@ -34,7 +34,7 @@ class SeleniumTests(LiveServerTestCase):
         self.assertEqual(resolve(self.unfix_url(self.selenium.current_url)).url_name, name)
 
 
-class TestChat(SeleniumTests):
+class ChatTestingUtils:
     def open_create_new_page(self):
         self.get(reverse("simplechat:index"))
 
@@ -87,6 +87,8 @@ class TestChat(SeleniumTests):
     def assert_no_messages(self):
         self.assertEqual(len(self.get_messages()), 0)
 
+
+class TestChat(ChatTestingUtils, SeleniumTests):
     def test_create_new_room(self):
         self.open_create_new_page()
         self.assert_at_create_new_room()
