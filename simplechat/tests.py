@@ -2,6 +2,7 @@ from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse, resolve
 from selenium import webdriver
 import time
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class SeleniumTests(LiveServerTestCase):
@@ -97,11 +98,22 @@ class ChatTestCase(SeleniumTests):
     def adjust_message(self, message_dict):
         return "[{0}]: {1}".format(message_dict['user'], message_dict['message'])
 
-    def get_messages(self, window=None):
+    def _get_messages(self, window=None):
         return self.get_items_in_list(self.get_window(window).find_element_by_id("message_list"))
 
+    def get_messages(self, window=None, expected_number=None, max_timeout=10):
+        def condition(driver):
+            messages = self._get_messages(driver)
+            if len(messages) == expected_number:
+                return messages
+
+        if expected_number is None:
+            return self._get_messages(window)
+        else:
+            return WebDriverWait(self.get_window(window), max_timeout).until(condition)
+
     def assert_messages_are(self, expected_message_list, window=None):
-        actual_message_list = self.get_messages(window)
+        actual_message_list = self.get_messages(window, expected_number=len(expected_message_list), max_timeout=10)
         expected_message_list = [self.adjust_message(message) for message in expected_message_list]
         self.assertEqual(actual_message_list, expected_message_list)
 
@@ -188,7 +200,6 @@ class TestChat(ChatTestCase):
             "message": "goodbye",
         })
         self.assert_messages_are(messages, second_window)
-        self.wait(3)
         self.assert_messages_are(messages)
         self.close_extra_windows()
 
