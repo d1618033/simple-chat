@@ -1,7 +1,6 @@
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse, resolve
 from selenium import webdriver
-import time
 from selenium.webdriver.support.ui import WebDriverWait
 
 
@@ -45,9 +44,6 @@ class SeleniumTests(LiveServerTestCase):
             return self.selenium
         else:
             return window
-
-    def wait(self, seconds):
-        time.sleep(seconds)
 
     @classmethod
     def close_extra_windows(cls):
