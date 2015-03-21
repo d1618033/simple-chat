@@ -48,6 +48,12 @@ class SeleniumTests(LiveServerTestCase):
     def wait(self, seconds):
         time.sleep(seconds)
 
+    @classmethod
+    def close_extra_windows(cls):
+        for window in cls.windows[1:]:
+            window.quit()
+        cls.windows = [cls.windows[0]]
+
 
 class ChatTestCase(SeleniumTests):
     def open_create_new_room_page(self, window=None):
@@ -102,6 +108,21 @@ class ChatTestCase(SeleniumTests):
     def assert_no_messages(self, window=None):
         self.assertEqual(len(self.get_messages(window)), 0)
 
+    def assert_participants_are(self, expected, window=None):
+        actual = self.get_participants(window)
+        self.assertEqual(sorted(actual), sorted(expected))
+
+    def get_participants(self, window):
+        return self.get_items_in_list(self.get_window(window).find_element_by_id("people_list"))
+
+    def enter_user_into_current_room(self, name, window=None):
+        second_window = self.new_window()
+        second_window.get(self.get_window(window).current_url)
+        self.assert_at_register(second_window)
+        self.enter_name(name, second_window)
+        self.enter_room(second_window)
+        return second_window
+
 
 class TestChat(ChatTestCase):
     def test_create_new_room(self):
@@ -151,11 +172,7 @@ class TestChat(ChatTestCase):
         self.enter_room()
         self.assert_no_messages()
         self.post_message("hello")
-        second_window = self.new_window()
-        second_window.get(self.selenium.current_url)
-        self.assert_at_register(second_window)
-        self.enter_name("bro", second_window)
-        self.enter_room(second_window)
+        second_window = self.enter_user_into_current_room("bro")
         messages = []
         messages.append({
             "user": "david",
@@ -170,3 +187,26 @@ class TestChat(ChatTestCase):
         self.assert_messages_are(messages, second_window)
         self.wait(3)
         self.assert_messages_are(messages)
+        self.close_extra_windows()
+
+    def test_particpiant_list(self):
+        participants = []
+        self.open_create_new_room_page()
+        self.create_new_room()
+        self.enter_name("david")
+        self.enter_room()
+        participants.append("david")
+        self.assert_participants_are(participants)
+        second_window = self.enter_user_into_current_room("bro")
+        participants.append("bro")
+        self.assert_participants_are(participants, second_window)
+        self.wait(3)
+        self.assert_participants_are(participants)
+        third_window = self.enter_user_into_current_room("dude")
+        participants.append("dude")
+        self.assert_participants_are(participants, third_window)
+        self.wait(3)
+        self.assert_participants_are(participants)
+        self.assert_participants_are(participants, second_window)
+        self.close_extra_windows()
+
