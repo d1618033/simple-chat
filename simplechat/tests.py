@@ -80,8 +80,14 @@ class ChatTestCase(SeleniumTests):
         self.assert_at_url_name("room_detail", window)
         self.assertRegex(self.get_text_body(window), "Welcome to room \d+, \w+")
 
+    def get_li_elems_in_list(self, list_elem):
+        return list_elem.find_elements_by_tag_name("li")
+
+    def get_text_in_elems(self, elems):
+        return [e.text for e in elems]
+
     def get_items_in_list(self, list_elem):
-        return [li.text for li in list_elem.find_elements_by_tag_name("li")]
+        return self.get_text_in_elems(self.get_li_elems_in_list(list_elem))
 
     def get_errors(self, window=None):
         return self.get_items_in_list(self.get_window(window).find_element_by_class_name("errorlist"))
@@ -98,17 +104,22 @@ class ChatTestCase(SeleniumTests):
     def adjust_message(self, message_dict):
         return "[{0}]: {1}".format(message_dict['user'], message_dict['message'])
 
-    def _get_messages(self, window=None):
-        return self.get_items_in_list(self.get_window(window).find_element_by_id("message_list"))
-
     def get_messages(self, window=None, expected_number=None, max_timeout=10):
+        return self.get_items_with_delay(
+            lambda driver: driver.find_element_by_id("message_list"),
+            window=window,
+            expected_number=expected_number,
+            max_timeout=max_timeout,
+        )
+
+    def get_items_with_delay(self, func, window=None, expected_number=None, max_timeout=10):
         def condition(driver):
-            messages = self._get_messages(driver)
-            if len(messages) == expected_number:
-                return messages
+            li_elems = self.get_li_elems_in_list(func(driver))
+            if len(li_elems) == expected_number:
+                return self.get_text_in_elems(li_elems)
 
         if expected_number is None:
-            return self._get_messages(window)
+            return self.get_items_in_list(func(self.get_window(window)))
         else:
             return WebDriverWait(self.get_window(window), max_timeout).until(condition)
 
@@ -121,11 +132,16 @@ class ChatTestCase(SeleniumTests):
         self.assertEqual(len(self.get_messages(window)), 0)
 
     def assert_participants_are(self, expected, window=None):
-        actual = self.get_participants(window)
+        actual = self.get_participants(window, expected_number=len(expected), max_timeout=10)
         self.assertEqual(sorted(actual), sorted(expected))
 
-    def get_participants(self, window):
-        return self.get_items_in_list(self.get_window(window).find_element_by_id("people_list"))
+    def get_participants(self, window=None, expected_number=None, max_timeout=10):
+        return self.get_items_with_delay(
+            lambda driver: driver.find_element_by_id("people_list"),
+            window=window,
+            expected_number=expected_number,
+            max_timeout=max_timeout,
+        )
 
     def enter_user_into_current_room(self, name, window=None):
         second_window = self.new_window()
@@ -203,7 +219,7 @@ class TestChat(ChatTestCase):
         self.assert_messages_are(messages)
         self.close_extra_windows()
 
-    def test_particpiant_list(self):
+    def test_participant_list(self):
         participants = []
         self.open_create_new_room_page()
         self.create_new_room()
@@ -214,18 +230,15 @@ class TestChat(ChatTestCase):
         second_window = self.enter_user_into_current_room("bro")
         participants.append("bro")
         self.assert_participants_are(participants, second_window)
-        self.wait(3)
         self.assert_participants_are(participants)
         third_window = self.enter_user_into_current_room("dude")
         participants.append("dude")
         self.assert_participants_are(participants, third_window)
-        self.wait(3)
         self.assert_participants_are(participants)
         self.assert_participants_are(participants, second_window)
         self.logout(second_window)
         self.assert_at_create_new_room(second_window)
         participants.remove("bro")
-        self.wait(10)
         self.assert_participants_are(participants)
         self.assert_participants_are(participants, third_window)
         self.close_extra_windows()
