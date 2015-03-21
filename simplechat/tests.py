@@ -123,6 +123,9 @@ class ChatTestCase(SeleniumTests):
         self.enter_room(second_window)
         return second_window
 
+    def logout(self, window=None):
+        self.get_window(window).find_element_by_id("logout").click()
+
 
 class TestChat(ChatTestCase):
     def test_create_new_room(self):
@@ -208,5 +211,11 @@ class TestChat(ChatTestCase):
         self.wait(3)
         self.assert_participants_are(participants)
         self.assert_participants_are(participants, second_window)
+        self.logout(second_window)
+        self.assert_at_create_new_room(second_window)
+        participants.remove("bro")
+        self.wait(10)
+        self.assert_participants_are(participants)
+        self.assert_participants_are(participants, third_window)
         self.close_extra_windows()
 
