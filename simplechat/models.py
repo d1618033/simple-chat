@@ -38,7 +38,7 @@ class Room(models.Model):
 
 
 def generate_password():
-    possible = string.ascii_letters + string.digits + string.punctuation
+    possible = string.ascii_letters + string.digits
     return "".join([random.choice(possible) for _ in range(100)])
 
 
