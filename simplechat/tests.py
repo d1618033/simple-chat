@@ -2,6 +2,7 @@ from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse, resolve
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 
 
 class SeleniumTests(LiveServerTestCase):
@@ -23,6 +24,9 @@ class SeleniumTests(LiveServerTestCase):
         window = webdriver.Firefox()
         cls.windows.append(window)
         return window
+
+    def tearDown(self):
+        self.close_extra_windows()
 
     def fix_url(self, url):
         return "{0}{1}".format(self.live_server_url, url)
@@ -125,7 +129,7 @@ class ChatTestCase(SeleniumTests):
         self.assertEqual(actual_message_list, expected_message_list)
 
     def assert_no_messages(self, window=None):
-        self.assertEqual(len(self.get_messages(window)), 0)
+        self.assertRaises(TimeoutException, self.get_messages, window, expected_number=1)
 
     def assert_participants_are(self, expected, window=None):
         actual = self.get_participants(window, expected_number=len(expected), max_timeout=10)
@@ -213,7 +217,6 @@ class TestChat(ChatTestCase):
         })
         self.assert_messages_are(messages, second_window)
         self.assert_messages_are(messages)
-        self.close_extra_windows()
 
     def test_participant_list(self):
         participants = []
@@ -237,5 +240,21 @@ class TestChat(ChatTestCase):
         participants.remove("bro")
         self.assert_participants_are(participants)
         self.assert_participants_are(participants, third_window)
-        self.close_extra_windows()
 
+    def test_not_allowed_to_post_in_someone_elses_name(self):
+        self.open_create_new_room_page()
+        self.create_new_room()
+        self.enter_name("david")
+        self.enter_room()
+        second_window = self.enter_user_into_current_room("bro")
+        third_window = self.enter_user_into_current_room("dude")
+        self.selenium.execute_script("user.pk+=1;")
+        self.post_message("hahaha")
+        # david posts a message in bro's name.
+        # david will see the message as his
+        # bro will not see the message because it's supposedly his
+        # dude will see the message as if bro posted it
+        # what should actually happen is that none of the windows should see any message
+        self.assert_no_messages(third_window)
+        self.assert_no_messages(second_window)
+        self.assert_no_messages()
