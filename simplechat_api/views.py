@@ -23,12 +23,27 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     queryset = Message.objects.all()
 
-    def create(self, request, *args, **kwargs):
+    def check_password(self, request):
         participant_pk = request.data['participant']
         participant = get_object_or_404(Participant, pk=participant_pk)
         if participant.password != request.data.get('password', ''):
+            return False
+        return True
+
+    def create(self, request, *args, **kwargs):
+        if not self.check_password(request):
             raise PermissionDenied
         return super(MessageViewSet, self).create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(MessageViewSet, self).update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(MessageViewSet, self).partial_update(request, *args, **kwargs)
 
     @list_route()
     def recent(self, request):
