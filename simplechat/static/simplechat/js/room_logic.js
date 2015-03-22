@@ -1,10 +1,11 @@
 var last_message_pk = 0;
 var user;
 
-var User = function (name, url, pk) {
+var User = function (name, url, pk, password) {
     this.name = name;
     this.url = url;
     this.pk = pk;
+    this.password = password;
 };
 
 function ask_user_for_name() {
@@ -135,7 +136,6 @@ function clear_message_text() {
 function on_click_send_message() {
     var message = get_message_text();
     post_message_to_server(message);
-    add_message_to_list(message);
     clear_message_text();
 }
 function on_keypress_message(e) {
@@ -146,12 +146,15 @@ function on_keypress_message(e) {
 }
 function post_message_to_server(message) {
     $.post(urls.message_list,
-            {
-                "room": context.room_id,
-                "participant": user.pk,
-                "message": message
-            }
-    )
+        {
+            "room": context.room_id,
+            "participant": user.pk,
+            "password": user.password,
+            "message": message
+        }
+    ).done(function(data){
+        add_message_to_list(message);
+    })
 }
 function update_messages() {
     $.get(urls.message_recent,
@@ -183,7 +186,7 @@ function pollForMessages() {
 }
 
 $(document).ready(function () {
-    user = new User(context.name, urls.participant, context.user_pk);
+    user = new User(context.name, urls.participant, context.user_pk, context.password);
     $("#logout").click(delete_user);
     $("#message-send-btn").click(on_click_send_message);
     $("#message-label").text(fix_message(""));
