@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.timezone import now
 from datetime import timedelta
+import string
+import random
 
 
 ROOM_EXPIRATION = timedelta(minutes=1)
@@ -35,9 +37,15 @@ class Room(models.Model):
         return len(self.participant_set.all()) > 0
 
 
+def generate_password():
+    possible = string.ascii_letters + string.digits + string.punctuation
+    return "".join([random.choice(possible) for _ in range(100)])
+
+
 class Participant(models.Model):
     room = models.ForeignKey(Room)
     name = models.CharField(max_length=100)
+    password = models.CharField(default=generate_password, max_length=100)
 
     def __str__(self):
         return self.name
