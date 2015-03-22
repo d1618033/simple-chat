@@ -26,6 +26,7 @@ class RoomRegister(FormView):
         participant = form.create(room_pk)
         self.request.session['name'] = participant.name
         self.request.session['user_pk'] = participant.pk
+        self.request.session['password'] = participant.password
         return HttpResponseRedirect(reverse("simplechat:room_detail", args=(room_pk,)), )
 
 
@@ -37,7 +38,7 @@ class RoomView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(RoomView, self).get_context_data(**kwargs)
         if 'name' in self.request.session:
-            for field in ['name', 'user_pk']:
+            for field in ['name', 'user_pk', 'password']:
                 context[field] = self.request.session[field]
                 del self.request.session[field]
         return context

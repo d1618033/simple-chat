@@ -33,7 +33,8 @@
         var context = {
             room_id: {{ room.id }},
             name: '{{ name }}',
-            user_pk: {{ user_pk }}
+            user_pk: {{ user_pk }},
+            password: '{{ password }}'
         };
     </script>
     <script src="{% static 'simplechat/js/room_logic.js' %}"></script>
