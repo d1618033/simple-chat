@@ -2,6 +2,8 @@ from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import PermissionDenied
 
 from simplechat.models import Room, Participant, Message
 from simplechat_api.serializers import RoomSerializer, ParticipantSerializer, MessageSerializer
@@ -20,6 +22,13 @@ class ParticipantViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     queryset = Message.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        participant_pk = request.data['participant']
+        participant = get_object_or_404(Participant, pk=participant_pk)
+        if participant.password != request.data.get('password', ''):
+            raise PermissionDenied
+        return super(MessageViewSet, self).create(request, *args, **kwargs)
 
     @list_route()
     def recent(self, request):
