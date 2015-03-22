@@ -23,9 +23,9 @@ class RoomRegister(FormView):
 
     def form_valid(self, form):
         room_pk = self.kwargs['pk']
-        name, user_pk = form.create(room_pk)
-        self.request.session['name'] = name
-        self.request.session['user_pk'] = user_pk
+        participant = form.create(room_pk)
+        self.request.session['name'] = participant.name
+        self.request.session['user_pk'] = participant.pk
         return HttpResponseRedirect(reverse("simplechat:room_detail", args=(room_pk,)), )
 
 

@@ -10,7 +10,7 @@ class RegisterForm(forms.Form):
         room = Room.objects.get(pk=room_pk)
         participant = Participant(name=name, room=room)
         participant.save()
-        return name, participant.pk
+        return participant
 
 
 class NewRoomForm(forms.Form):
