@@ -247,3 +247,11 @@ class TestChat(ChatTestCase):
         self.assert_no_messages(third_window)
         self.assert_no_messages(second_window)
         self.assert_no_messages()
+
+    def test_not_allowed_to_logout_in_someone_elses_name(self):
+        self.create_and_enter_user_into_room("david")
+        second_window = self.enter_user_into_current_room("bro")
+        self.selenium.execute_script("user.pk+=1;")
+        self.logout()
+        self.assert_at_room(second_window)
+        self.assert_at_room()
