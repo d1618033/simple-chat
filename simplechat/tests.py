@@ -131,6 +131,7 @@ class ChatTestCase(SeleniumTests):
 
     def assert_no_messages(self, window=None):
         self.assertRaises(TimeoutException, self.get_messages, window, expected_number=1)
+        self.assertEqual(len(self.get_messages(window)), 0)
 
     def assert_participants_are(self, expected, window=None):
         actual = self.get_participants(window, expected_number=len(expected), max_timeout=10)
