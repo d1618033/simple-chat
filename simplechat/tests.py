@@ -259,3 +259,5 @@ class TestChat(ChatTestCase):
         self.logout()
         self.assert_at_room(second_window)
         self.assert_at_room()
+        self.assert_participants_are(["david", "bro"])
+        self.assert_participants_are(["david", "bro"], second_window)
