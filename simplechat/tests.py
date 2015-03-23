@@ -169,9 +169,7 @@ class TestChat(ChatTestCase):
         self.assert_at_register()
 
     def test_register_empty_name_doesnt_work(self):
-        self.open_create_new_room_page()
-        self.create_new_room()
-        self.enter_room()
+        self.create_and_enter_user_into_room("")
         self.assert_at_register()
         self.assert_has_errors(["This field is required."])
 
