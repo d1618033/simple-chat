@@ -106,8 +106,12 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'custom': {
+        'c': {
             'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'f': {
+            'handlers': ['file'],
             'level': 'INFO',
         }
     },
