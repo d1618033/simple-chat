@@ -14,12 +14,46 @@ class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
 
 
-class ParticipantViewSet(viewsets.ModelViewSet):
+class CheckPasswordMixin:
+    def create(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(CheckPasswordMixin, self).create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(CheckPasswordMixin, self).update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(CheckPasswordMixin, self).partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(CheckPasswordMixin, self).destroy(request, *args, **kwargs)
+
+    def partial_destroy(self, request, *args, **kwargs):
+        if not self.check_password(request):
+            raise PermissionDenied
+        return super(CheckPasswordMixin, self).partial_destroy(request, *args, **kwargs)
+
+
+class ParticipantViewSet(CheckPasswordMixin, viewsets.ModelViewSet):
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer
 
+    def check_password(self, request):
+        participant_pk = self.kwargs['pk']
+        participant = get_object_or_404(Participant, pk=participant_pk)
+        if participant.password != request.data.get('password', ''):
+            return False
+        return True
 
-class MessageViewSet(viewsets.ModelViewSet):
+
+class MessageViewSet(CheckPasswordMixin, viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     queryset = Message.objects.all()
 
@@ -29,21 +63,6 @@ class MessageViewSet(viewsets.ModelViewSet):
         if participant.password != request.data.get('password', ''):
             return False
         return True
-
-    def create(self, request, *args, **kwargs):
-        if not self.check_password(request):
-            raise PermissionDenied
-        return super(MessageViewSet, self).create(request, *args, **kwargs)
-
-    def update(self, request, *args, **kwargs):
-        if not self.check_password(request):
-            raise PermissionDenied
-        return super(MessageViewSet, self).update(request, *args, **kwargs)
-
-    def partial_update(self, request, *args, **kwargs):
-        if not self.check_password(request):
-            raise PermissionDenied
-        return super(MessageViewSet, self).partial_update(request, *args, **kwargs)
 
     @list_route()
     def recent(self, request):
