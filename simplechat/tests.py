@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse, resolve
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from simplechat.models import Participant
 
 
 class SeleniumTests(LiveServerTestCase):
@@ -251,7 +252,9 @@ class TestChat(ChatTestCase):
     def test_not_allowed_to_logout_in_someone_elses_name(self):
         self.create_and_enter_user_into_room("david")
         second_window = self.enter_user_into_current_room("bro")
-        self.selenium.execute_script("user.url='{0}';".format(reverse("simplechat_api:participant-detail", args=(2, ))))
+        pk = Participant.objects.latest('pk').pk
+        self.selenium.execute_script("user.url='{0}';".format(reverse("simplechat_api:participant-detail",
+                                                                      args=(pk, ))))
         self.logout()
         self.assert_at_room(second_window)
         self.assert_at_room()
