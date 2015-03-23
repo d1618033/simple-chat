@@ -154,6 +154,12 @@ class ChatTestCase(SeleniumTests):
     def logout(self, window=None):
         self.get_window(window).find_element_by_id("logout").click()
 
+    def create_and_enter_user_into_room(self, name, window=None):
+        self.open_create_new_room_page(window)
+        self.create_new_room(window)
+        self.enter_name(name, window)
+        self.enter_room(window)
+
 
 class TestChat(ChatTestCase):
     def test_create_new_room(self):
@@ -170,17 +176,11 @@ class TestChat(ChatTestCase):
         self.assert_has_errors(["This field is required."])
 
     def test_register_name_leads_to_room_page(self):
-        self.open_create_new_room_page()
-        self.create_new_room()
-        self.enter_name("david")
-        self.enter_room()
+        self.create_and_enter_user_into_room("david")
         self.assert_at_room()
 
     def test_post_message_in_room(self):
-        self.open_create_new_room_page()
-        self.create_new_room()
-        self.enter_name("david")
-        self.enter_room()
+        self.create_and_enter_user_into_room("david")
         self.assert_no_messages()
         self.post_message("hello")
         messages = []
@@ -197,10 +197,7 @@ class TestChat(ChatTestCase):
         self.assert_messages_are(messages)
 
     def test_post_messages_multiple_users(self):
-        self.open_create_new_room_page()
-        self.create_new_room()
-        self.enter_name("david")
-        self.enter_room()
+        self.create_and_enter_user_into_room("david")
         self.assert_no_messages()
         self.post_message("hello")
         second_window = self.enter_user_into_current_room("bro")
@@ -220,10 +217,7 @@ class TestChat(ChatTestCase):
 
     def test_participant_list(self):
         participants = []
-        self.open_create_new_room_page()
-        self.create_new_room()
-        self.enter_name("david")
-        self.enter_room()
+        self.create_and_enter_user_into_room("david")
         participants.append("david")
         self.assert_participants_are(participants)
         second_window = self.enter_user_into_current_room("bro")
@@ -242,10 +236,7 @@ class TestChat(ChatTestCase):
         self.assert_participants_are(participants, third_window)
 
     def test_not_allowed_to_post_in_someone_elses_name(self):
-        self.open_create_new_room_page()
-        self.create_new_room()
-        self.enter_name("david")
-        self.enter_room()
+        self.create_and_enter_user_into_room("david")
         second_window = self.enter_user_into_current_room("bro")
         third_window = self.enter_user_into_current_room("dude")
         self.selenium.execute_script("user.pk+=1;")
