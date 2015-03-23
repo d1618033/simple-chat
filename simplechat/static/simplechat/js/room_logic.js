@@ -32,7 +32,8 @@ function add_user() {
 function delete_user() {
     $.ajax({
         url: user.url,
-        method: "delete"
+        method: "delete",
+        data: {password: user.password}
     }).done(function () {
         go_to_home_page();
     });
