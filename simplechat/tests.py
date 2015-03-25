@@ -79,7 +79,7 @@ class ChatTestCase(SeleniumTests):
 
     def assert_at_room(self, window=None):
         self.assert_at_url_name("room_detail", window)
-        self.assertRegex(self.get_text_body(window), "Welcome to room \d+, \w+")
+        self.assertRegex(self.get_text_body(window), "Welcome to room \d+, .+")
 
     def get_li_elems_in_list(self, list_elem):
         return list_elem.find_elements_by_tag_name("li")
@@ -265,4 +265,8 @@ class TestChat(ChatTestCase):
     def test_xss_in_messages(self):
         self.create_and_enter_user_into_room("david")
         self.post_message("<script>location.href='{0}';</script>".format(reverse("simplechat:index")))
+        self.assert_at_room()
+
+    def test_xss_in_username(self):
+        self.create_and_enter_user_into_room("<script>location.href='{0}';</script>".format(reverse("simplechat:index")))
         self.assert_at_room()
