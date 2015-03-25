@@ -31,10 +31,10 @@
             participant: "{% url 'simplechat_api:participant-detail' user_pk %}"
         };
         var context = {
-            room_id: {{ room.id }},
+            room_id: {{ room.id | escapejs }},
             name: '{{ name | escapejs }}',
-            user_pk: {{ user_pk }},
-            password: '{{ password }}'
+            user_pk: {{ user_pk | escapejs }},
+            password: '{{ password | escapejs }}'
         };
     </script>
     <script src="{% static 'simplechat/js/room_logic.js' %}"></script>
