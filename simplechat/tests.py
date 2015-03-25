@@ -261,3 +261,8 @@ class TestChat(ChatTestCase):
         self.assert_at_room()
         self.assert_participants_are(["david", "bro"])
         self.assert_participants_are(["david", "bro"], second_window)
+
+    def test_xss_in_messages(self):
+        self.create_and_enter_user_into_room("david")
+        self.post_message("<script>location.href='{0}';</script>".format(reverse("simplechat:index")))
+        self.assert_at_room()
