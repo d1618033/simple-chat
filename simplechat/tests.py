@@ -44,6 +44,9 @@ class SeleniumTests(LiveServerTestCase):
     def assert_at_url_name(self, name, window=None):
         self.assertEqual(resolve(self.unfix_url(self.get_window(window).current_url)).url_name, name)
 
+    def assert_in_body_regex(self, text, window=None):
+        self.assertRegex(self.get_text_body(window), text)
+
     def get_window(self, window):
         if window is None:
             return self.selenium
@@ -270,3 +273,7 @@ class TestChat(ChatTestCase):
     def test_xss_in_username(self):
         self.create_and_enter_user_into_room("<script>location.href='{0}';</script>".format(reverse("simplechat:index")))
         self.assert_at_room()
+
+    def test_no_double_escaping_username(self):
+        self.create_and_enter_user_into_room("<")
+        self.assert_in_body_regex("Welcome to room \d+, <")
