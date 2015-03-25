@@ -32,7 +32,7 @@
         };
         var context = {
             room_id: {{ room.id }},
-            name: '{{ name }}',
+            name: '{{ name | escapejs }}',
             user_pk: {{ user_pk }},
             password: '{{ password }}'
         };
