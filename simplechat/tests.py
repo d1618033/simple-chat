@@ -277,3 +277,8 @@ class TestChat(ChatTestCase):
     def test_no_double_escaping_username(self):
         self.create_and_enter_user_into_room("<")
         self.assert_in_body_regex("Welcome to room \d+, <")
+
+    def test_no_double_escaping_messages(self):
+        self.create_and_enter_user_into_room("dude")
+        self.post_message("<")
+        self.assert_messages_are([{"user": "dude", "message": "<"}])
