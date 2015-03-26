@@ -78,7 +78,7 @@ class ChatTestCase(SeleniumTests):
 
     def assert_at_register(self, window=None):
         self.assert_at_url_name("room_register", window)
-        self.assertIn("Please enter your nickname", self.get_text_body(window))
+        self.assert_in_body_regex("Please enter your nickname\s*Name:", window)
 
     def assert_at_room(self, window=None):
         self.assert_at_url_name("room_detail", window)
