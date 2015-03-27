@@ -47,6 +47,9 @@ class SeleniumTests(LiveServerTestCase):
     def assert_in_body_regex(self, text, window=None):
         self.assertRegex(self.get_text_body(window), text)
 
+    def assert_in_body(self, text, window=None):
+        self.assertIn(text, self.get_text_body(window))
+
     def get_window(self, window):
         if window is None:
             return self.selenium
@@ -80,9 +83,11 @@ class ChatTestCase(SeleniumTests):
         self.assert_at_url_name("room_register", window)
         self.assert_in_body_regex("Please enter your nickname\s*Name:", window)
 
-    def assert_at_room(self, window=None):
+    def assert_at_room(self, window=None, name=None):
         self.assert_at_url_name("room_detail", window)
-        self.assertRegex(self.get_text_body(window), "Welcome to room \d+, .+")
+        self.assert_in_body_regex("Welcome to room \d+, .+", window)
+        if name is not None:
+            self.assert_in_body(", {0}".format(name), window)
 
     def get_li_elems_in_list(self, list_elem):
         return list_elem.find_elements_by_tag_name("li")
@@ -180,7 +185,7 @@ class TestChat(ChatTestCase):
 
     def test_register_name_leads_to_room_page(self):
         self.create_and_enter_user_into_room("david")
-        self.assert_at_room()
+        self.assert_at_room(name="david")
 
     def test_post_message_in_room(self):
         self.create_and_enter_user_into_room("david")
@@ -260,19 +265,20 @@ class TestChat(ChatTestCase):
         self.selenium.execute_script("user.url='{0}';".format(reverse("simplechat_api:participant-detail",
                                                                       args=(pk, ))))
         self.logout()
-        self.assert_at_room(second_window)
-        self.assert_at_room()
+        self.assert_at_room(second_window, name="bro")
+        self.assert_at_room(name="david")
         self.assert_participants_are(["david", "bro"])
         self.assert_participants_are(["david", "bro"], second_window)
 
     def test_xss_in_messages(self):
         self.create_and_enter_user_into_room("david")
         self.post_message("<script>location.href='{0}';</script>".format(reverse("simplechat:index")))
-        self.assert_at_room()
+        self.assert_at_room(name="david")
 
     def test_xss_in_username(self):
-        self.create_and_enter_user_into_room("<script>location.href='{0}';</script>".format(reverse("simplechat:index")))
-        self.assert_at_room()
+        name = "<script>location.href='{0}';</script>".format(reverse("simplechat:index"))
+        self.create_and_enter_user_into_room(name)
+        self.assert_at_room(name=name)
 
     def test_no_double_escaping_username(self):
         self.create_and_enter_user_into_room("<")
