@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from simplechat.models import Participant
+import re
 
 
 class SeleniumTests(LiveServerTestCase):
@@ -85,9 +86,11 @@ class ChatTestCase(SeleniumTests):
 
     def assert_at_room(self, window=None, name=None):
         self.assert_at_url_name("room_detail", window)
-        self.assert_in_body_regex("Welcome to room \d+, .+", window)
-        if name is not None:
-            self.assert_in_body(", {0}".format(name), window)
+        if name is None:
+            pattern = "Welcome to room \d+, .+"
+        else:
+            pattern = "Welcome to room \d+, {0}".format(re.escape(name))
+        self.assert_in_body_regex(pattern, window)
 
     def get_li_elems_in_list(self, list_elem):
         return list_elem.find_elements_by_tag_name("li")
@@ -279,10 +282,6 @@ class TestChat(ChatTestCase):
         name = "<script>location.href='{0}';</script>".format(reverse("simplechat:index"))
         self.create_and_enter_user_into_room(name)
         self.assert_at_room(name=name)
-
-    def test_no_double_escaping_username(self):
-        self.create_and_enter_user_into_room("<")
-        self.assert_in_body_regex("Welcome to room \d+, <")
 
     def test_no_double_escaping_messages(self):
         self.create_and_enter_user_into_room("dude")
