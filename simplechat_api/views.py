@@ -7,6 +7,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from simplechat.models import Room, Participant, Message
 from simplechat_api.serializers import RoomSerializer, ParticipantSerializer, MessageSerializer
+from simplechat_api.permisssion import CanEditParticipant
 
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -41,16 +42,10 @@ class CheckPasswordMixin:
         return super(CheckPasswordMixin, self).partial_destroy(request, *args, **kwargs)
 
 
-class ParticipantViewSet(CheckPasswordMixin, viewsets.ModelViewSet):
+class ParticipantViewSet(viewsets.ModelViewSet):
     queryset = Participant.objects.all()
     serializer_class = ParticipantSerializer
-
-    def check_password(self, request):
-        participant_pk = self.kwargs['pk']
-        participant = get_object_or_404(Participant, pk=participant_pk)
-        if participant.password != request.data.get('password', ''):
-            return False
-        return True
+    permission_classes = (CanEditParticipant,)
 
 
 class MessageViewSet(CheckPasswordMixin, viewsets.ModelViewSet):
