@@ -144,8 +144,14 @@ class ChatTestCase(SeleniumTests):
         self.assertRaises(TimeoutException, self.get_messages, window, expected_number=1)
         self.assertEqual(len(self.get_messages(window)), 0)
 
-    def assert_participants_are(self, expected, window=None):
-        actual = self.get_participants(window, expected_number=len(expected), max_timeout=10)
+    def assert_participants_are(self, expected, wait_for=None, window=None):
+        if wait_for is not None:
+            self.assertRaises(TimeoutException, self.get_participants, window, expected_number=wait_for, max_timeout=10)
+        actual = self.get_participants(
+            window,
+            expected_number=len(expected),
+            max_timeout=10
+        )
         self.assertEqual(sorted(actual), sorted(expected))
 
     def get_participants(self, window=None, expected_number=None, max_timeout=10):
@@ -264,14 +270,15 @@ class TestChat(ChatTestCase):
     def test_not_allowed_to_logout_in_someone_elses_name(self):
         self.create_and_enter_user_into_room("david")
         second_window = self.enter_user_into_current_room("bro")
-        pk = Participant.objects.latest('pk').pk
-        self.selenium.execute_script("user.url='{0}';".format(reverse("simplechat_api:participant-detail",
-                                                                      args=(pk, ))))
-        self.logout()
-        self.assert_at_room(second_window, name="bro")
-        self.assert_at_room(name="david")
         self.assert_participants_are(["david", "bro"])
-        self.assert_participants_are(["david", "bro"], second_window)
+        self.assert_participants_are(["david", "bro"], window=second_window)
+        pk = Participant.objects.latest('pk').pk
+        self.selenium.execute_script(
+            '$.ajax({{url: "{0}",method: "delete"}})'
+            ''.format(reverse("simplechat_api:participant-detail", args=(pk, )))
+        )
+        self.assert_participants_are(["david", "bro"], wait_for=1)
+        self.assert_participants_are(["david", "bro"], window=second_window, wait_for=1)
 
     def test_xss_in_messages(self):
         self.create_and_enter_user_into_room("david")
