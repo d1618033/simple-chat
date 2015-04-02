@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse, resolve
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
-from simplechat.models import Participant
+from simplechat.models import Participant, Room
 import re
 
 
@@ -256,8 +256,14 @@ class TestChat(ChatTestCase):
         self.create_and_enter_user_into_room("david")
         second_window = self.enter_user_into_current_room("bro")
         third_window = self.enter_user_into_current_room("dude")
-        self.selenium.execute_script("user.pk+=1;")
-        self.post_message("hahaha")
+        room = Room.objects.all().order_by('-pk')[0]
+        participant = Participant.objects.all().order_by('-pk')[1]
+        url = reverse("simplechat_api:message-list")
+        room_pk = room.pk
+        participant_pk = participant.pk
+        script = '$.post("{0}", {{room: {1}, participant: {2}, message: "hahahahah"}})'.format(url, room_pk,
+                                                                                             participant_pk)
+        self.selenium.execute_script(script)
         # david posts a message in bro's name.
         # david will see the message as his
         # bro will not see the message because it's supposedly his
