@@ -57,8 +57,5 @@ docs/_build/
 # PyBuilder
 target/
 
-<<<<<<< HEAD
-
-=======
 .idea/
->>>>>>> dev
+
